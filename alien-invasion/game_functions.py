@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 import pygame
 
 from bullet import Bullet
@@ -74,13 +75,17 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
 		if bullet.rect.bottom <= 0:
 			bullets.remove(bullet)
 
+	check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets)
+
+def check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets):
+	# check if any bullet hit aliens & get rid of that
+	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+	
 	if len(aliens) == 0:
 		# destroy existing bullets and create new fleet
 		bullets.empty()
 		create_fleet(ai_settings, screen, ship, aliens) 
 
-	# check if any bullet hit aliens & get rid of that
-	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
 
 def get_number_aliens(ai_settings, alien_width):
 	"""find no of aliens in a row"""
@@ -128,8 +133,27 @@ def change_fleet_direction(ai_settings, aliens):
 		alien.rect.y += ai_settings.fleet_drop_speed
 	ai_settings.fleet_direction *= -1
 
-def update_aliens(ai_settings, aliens):
+def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
+	"""respond to a ship hit by alien"""
+	#decrement ships left
+	stats.ships_left -= 1
+
+	# empty list of aliens and bullets
+	aliens.empty()
+	bullets.empty()
+
+	# create a new fleet and center the ship
+	create_fleet(ai_settings, screen, ship, aliens)
+	ship.center_ship()
+
+	# pause
+	sleep(0.5)
+
+def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
 	"""Update the position of all aliens in the fleet."""
 	check_fleet_edges(ai_settings, aliens)
 	aliens.update()
 
+	# look for alien-ship collisions
+	if pygame.sprite.spritecollideany(ship, aliens):
+		ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
