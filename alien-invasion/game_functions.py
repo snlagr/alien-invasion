@@ -57,7 +57,11 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
 		bullet.draw_bullet()
 
 	ship.blitme()
+	
+	# for alien in aliens.sprites():
+	# 	alien.blitme()
 	aliens.draw(screen)
+	
 	# make most recently drawn screen visible
 	pygame.display.flip()
 
@@ -68,20 +72,27 @@ def update_bullets(bullets):
 	# get rid of bullets that have disappeared
 	for bullet in bullets.copy():
 		if bullet.rect.bottom <= 0:
-			bullets.remove(bullet)	
+			bullets.remove(bullet)
+
+def get_number_aliens(ai_settings, alien_width):
+	"""find no of aliens in a row"""
+	available_space_x = ai_settings.screen_width - 2 * alien_width
+	number_aliens_x = int(available_space_x / (2 * alien_width))
+	return number_aliens_x
+
+def create_alien(ai_settings, screen, aliens, alien_number):
+	"""create alien and place in a row"""
+	alien = Alien(ai_settings, screen)
+	alien_width = alien.rect.width
+	alien.x = alien_width + 2 * alien_width * alien_number
+	alien.rect.x = alien.x
+	aliens.add(alien)
 
 def create_fleet(ai_settings, screen, aliens):
 	"""Biggest army ever"""
-	# find no of aliens in a row
 	# space each alien by one alien width
 	alien = Alien(ai_settings, screen)
-	alien_width = alien.rect.width
-	available_space_x = ai_settings.screen_width - 2 * alien_width
-	number_aliens_x = int(available_space_x / (2 * alien_width))
-
+	number_aliens_x = get_number_aliens(ai_settings, alien.rect.width)
 	# create first row of aliens
 	for alien_number in range(number_aliens_x):
-		alien = Alien(ai_settings, screen)
-		alien.x = alien_width + 2 * alien_width * alien_number
-		alien.rect.x = alien.x
-		aliens.add(alien)
+		create_alien(ai_settings, screen, aliens, alien_number)
