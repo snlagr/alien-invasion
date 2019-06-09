@@ -14,7 +14,7 @@ def check_events(ai_settings, screen, stats, play_button,
 
 			elif event.type == pygame.KEYDOWN:
 				check_keydown_events(event, ai_settings, screen,
-					ship, bullets)
+					ship, bullets, stats, aliens)
 
 			elif event.type == pygame.KEYUP:
 				check_keyup_events(event, ship)
@@ -27,23 +27,27 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
 	"""start new game when player clicks play"""
 	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active:
-		# hide mouse cursor
-		pygame.mouse.set_visible(False)
+		start_game(ai_settings, screen, stats, ship, aliens, bullets)
 
-		# reset game statistics
-		stats.reset_stats()
-		stats.game_active = True
+def start_game(ai_settings, screen, stats, ship, aliens, bullets):
+	# hide mouse cursor
+	pygame.mouse.set_visible(False)
 
-		# empty list of aliens and bullets
-		aliens.empty()
-		bullets.empty()
+	# reset game statistics
+	stats.reset_stats()
+	stats.game_active = True
 
-		# create a new fleet and center the ship
-		create_fleet(ai_settings, screen, ship, aliens)
-		ship.center_ship()
+	# empty list of aliens and bullets
+	aliens.empty()
+	bullets.empty()
+
+	# create a new fleet and center the ship
+	create_fleet(ai_settings, screen, ship, aliens)
+	ship.center_ship()
+
 
 def check_keydown_events(event, ai_settings, screen,
-	ship, bullets):
+	ship, bullets, stats, aliens):
 	"""respond to keypresses"""
 	if event.key == pygame.K_RIGHT:
 		ship.moving_right = True
@@ -53,7 +57,8 @@ def check_keydown_events(event, ai_settings, screen,
 		fire_bullet(ai_settings, screen, ship, bullets)
 	elif event.key == pygame.K_q:
 		sys.exit()
-		
+	elif event.key == pygame.K_p:
+		start_game(ai_settings, screen, stats, ship, aliens, bullets)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	"""Fires only if limit not reached."""
