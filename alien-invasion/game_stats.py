@@ -5,6 +5,8 @@ class GameStats():
 		self.ai_settings = ai_settings
 		self.game_active = False
 		self.reset_stats()
+		# high score should never reset
+		self.high_score = 0
 
 	def reset_stats(self):
 		"""stats that can change during the game"""
