@@ -1,3 +1,5 @@
+import shelve
+
 class GameStats():
 	"""Track various statistics"""
 
@@ -5,8 +7,11 @@ class GameStats():
 		self.ai_settings = ai_settings
 		self.game_active = False
 		self.reset_stats()
-		# high score should never reset
-		self.high_score = 0
+
+		# load high score (should never reset)
+		high_score_file = shelve.open('high_score')
+		self.high_score = high_score_file['high_score']
+		high_score_file.close()
 
 	def reset_stats(self):
 		"""stats that can change during the game"""

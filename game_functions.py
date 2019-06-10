@@ -1,6 +1,7 @@
 import sys
 from time import sleep
 import pygame
+import shelve
 
 from bullet import Bullet
 from alien import Alien
@@ -232,5 +233,10 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets, sb):
 def check_high_score(stats, sb):
 	"""Check to see if there's a new high score."""
 	if stats.score > stats.high_score:
-		stats.high_score  =stats.score
+		stats.high_score  = stats.score
 		sb.prep_high_score()
+
+		# save new high score locally
+		high_score_file = shelve.open('high_score')
+		high_score_file['high_score'] = stats.score
+		high_score_file.close()
