@@ -11,7 +11,7 @@ def check_events(ai_settings, screen, stats, sb, play_button,
 	"""Respond to keypresses and mouse events."""
 	for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				sys.exit()
+				exit_game(stats)
 
 			elif event.type == pygame.KEYDOWN:
 				check_keydown_events(event, ai_settings, screen,
@@ -66,9 +66,17 @@ def check_keydown_events(event, ai_settings, screen,
 	elif event.key == pygame.K_SPACE:
 		fire_bullet(ai_settings, screen, ship, bullets)
 	elif event.key == pygame.K_q:
-		sys.exit()
+		exit_game(stats)
 	elif event.key == pygame.K_p:
 		start_game(ai_settings, screen, stats, sb, ship, aliens, bullets)
+
+def exit_game(stats):
+	# save new high score locally
+	high_score_file = shelve.open('high_score')
+	high_score_file['high_score'] = stats.high_score
+	high_score_file.close()
+
+	sys.exit()
 
 def fire_bullet(ai_settings, screen, ship, bullets):
 	"""Fires only if limit not reached."""
@@ -235,8 +243,3 @@ def check_high_score(stats, sb):
 	if stats.score > stats.high_score:
 		stats.high_score  = stats.score
 		sb.prep_high_score()
-
-		# save new high score locally
-		high_score_file = shelve.open('high_score')
-		high_score_file['high_score'] = stats.score
-		high_score_file.close()
